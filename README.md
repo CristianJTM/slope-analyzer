@@ -26,23 +26,35 @@ referencia)**
 - Validado contra software de referencia (Ordinary/Fellenius): `FS 1.0768` vs
   `1.07797`.
 
-13 tests en verde.
+**Fase 3 — API (implementada)**
+
+- FastAPI: `POST /api/v1/analyze` y `GET /api/v1/analyses`.
+- Historial persistido en SQLite con SQLAlchemy.
+
+18 tests en verde.
 
 ## Stack
 
 - Backend: Python 3.11+ (probado con 3.12)
+- API: FastAPI + SQLAlchemy (SQLite)
 - Tests: `pytest`
-- Futuro: FastAPI + SQLite + React/Vite/TypeScript + Docker Compose
+- Futuro: React/Vite/TypeScript + Docker Compose
 
 ## Estructura
 
 ```
 backend/
-  app/core/        # lógica de cálculo pura (sin FastAPI)
-    models.py      # dataclasses del dominio
-    slicing.py     # slice_slope(): geometría -> dovelas
-    bishop.py      # bishop_fs(): dovelas -> factor de seguridad
-    fellenius.py   # fellenius_fs(): método ordinario (sin iterar)
+  app/
+    core/          # dominio: cálculo puro (sin FastAPI)
+      models.py    # dataclasses del dominio
+      slicing.py   # slice_slope(): geometría -> dovelas
+      bishop.py    # bishop_fs(): dovelas -> factor de seguridad
+      fellenius.py # fellenius_fs(): método ordinario (sin iterar)
+    models/        # DTOs Pydantic (request/response)
+    services/      # aplicación: core + persistencia
+    api/           # endpoints FastAPI
+    db/            # SQLite + SQLAlchemy (historial)
+    main.py        # app FastAPI
   tests/           # pruebas con pytest
 docs/specs/        # especificaciones de cada módulo
 ```
@@ -58,16 +70,26 @@ docs/specs/        # especificaciones de cada módulo
 | `phi` | ángulo de fricción interna (grados) |
 | `gamma` | peso unitario (kN/m³) |
 
-## Cómo correr los tests
+## Cómo correr
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
+pip install -r backend\requirements.txt
 pip install -r backend\requirements-dev.txt
 
 cd backend
 python -m pytest
 ```
+
+## Cómo correr la API
+
+```powershell
+cd backend
+uvicorn app.main:app --reload
+```
+
+Swagger en `http://127.0.0.1:8000/docs`.
 
 ## Método
 
@@ -92,7 +114,7 @@ FS = Σ [ cohesion·Δl + W·(1 − ru)·cos α·tan φ ] / Σ [ W·sin α ]
 1. ~~Fase 1 — Bishop Simplificado~~: núcleo + tests (completa).
 2. ~~Validación contra software de referencia (seco y `ru`)~~ (completa).
 3. ~~Fase 2 — Fellenius~~: núcleo + tests + validación externa (completa).
-4. **Fase 3** — API FastAPI + persistencia SQLite.
+4. ~~Fase 3 — API FastAPI + SQLite~~ (completa).
 5. **Fase 4** — Frontend React/Vite/TypeScript.
 6. **Fase 5** — Docker Compose + CI con GitHub Actions.
 
