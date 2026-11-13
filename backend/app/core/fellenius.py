@@ -6,13 +6,13 @@ from .models import Slice, SoilParams
 def fellenius_fs(slices: list[Slice], soil: SoilParams) -> float:
     """Factor de seguridad por Fellenius (método ordinario de las dovelas).
 
-    FS = Σ [ cohesion·Δl_i + (W_i·cos α_i − u_i·Δl_i)·tan φ ] / Σ [ W_i·sin α_i ]
+    FS = Σ [ cohesion·Δl_i + W_i·(1 − ru)·cos α_i·tan φ ] / Σ [ W_i·sin α_i ]
 
-      W_i      = gamma · width_i · height_i
-      Δl_i     = width_i / cos α_i          (longitud de la base de la dovela)
-      u_i·Δl_i = ru · W_i / cos α_i         (fuerza de poros)
+      W_i  = gamma · width_i · height_i
+      Δl_i = width_i / cos α_i          (longitud de la base de la dovela)
 
-    A diferencia de Bishop, no itera: el FS se calcula directo.
+    El término W·(1 − ru) es el peso efectivo: misma convención de ru que
+    Bishop. A diferencia de Bishop, no itera.
     φ y α se usan en grados y se convierten a radianes internamente.
 
     Lanza ValueError si slices está vacío, si algún width/height < 0, si
@@ -40,10 +40,10 @@ def fellenius_fs(slices: list[Slice], soil: SoilParams) -> float:
             raise ValueError("base_angle no puede ser ±90°")
         weight = soil.gamma * s.width * s.height
         base_length = s.width / cos_a
-        pore_force = soil.ru * weight / cos_a
-        numerator += soil.cohesion * base_length + (
-            weight * cos_a - pore_force
-        ) * tan_phi
+        numerator += (
+            soil.cohesion * base_length
+            + weight * (1.0 - soil.ru) * cos_a * tan_phi
+        )
         denominator += weight * math.sin(alpha)
 
     if denominator == 0.0:

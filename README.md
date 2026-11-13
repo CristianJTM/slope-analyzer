@@ -17,13 +17,13 @@ referencia)**
   (`slip_circle`), o ingresadas directamente.
 - Presión de poros modelada con `ru`.
 - Validado contra software de referencia (Bishop simplificado): seco
-  (`FS 1.3747` vs `1.37563`), con `ru = 0.25` (`1.1001` vs `1.101`) y con
-  `c = 0` (`1.3009` vs `1.30087`).
+  (`FS 1.3747` vs `1.37563`) y con `ru = 0.25` (`1.1001` vs `1.101`).
 
-**Fase 2 — Fellenius (en curso)**
+**Fase 2 — Fellenius (completa y validada contra software de referencia)**
 
 - Núcleo del método ordinario implementado + tests.
-- ⏳ Validación externa pendiente.
+- Validado contra software de referencia (Ordinary/Fellenius): `FS 1.0768` vs
+  `1.07797`.
 
 12 tests en verde.
 
@@ -82,7 +82,7 @@ Iteración desde `FS = 1.0` hasta convergencia.
 Fellenius (método ordinario), sin iteración:
 
 ```
-FS = Σ [ cohesion·Δl + (W·cos α − ru·W/cos α)·tan φ ] / Σ [ W·sin α ]
+FS = Σ [ cohesion·Δl + W·(1 − ru)·cos α·tan φ ] / Σ [ W·sin α ]
 Δl = b / cos α
 ```
 
@@ -90,7 +90,7 @@ FS = Σ [ cohesion·Δl + (W·cos α − ru·W/cos α)·tan φ ] / Σ [ W·sin �
 
 1. ~~Fase 1 — Bishop Simplificado~~: núcleo + tests (completa).
 2. ~~Validación contra software de referencia (seco y `ru`)~~ (completa).
-3. **Fase 2 — Fellenius** (en curso): núcleo + tests; falta validación externa.
+3. ~~Fase 2 — Fellenius~~: núcleo + tests + validación externa (completa).
 4. **Fase 3** — API FastAPI + persistencia SQLite.
 5. **Fase 4** — Frontend React/Vite/TypeScript.
 6. **Fase 5** — Docker Compose + CI con GitHub Actions.
