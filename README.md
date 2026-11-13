@@ -17,7 +17,8 @@ referencia)**
   (`slip_circle`), o ingresadas directamente.
 - Presión de poros modelada con `ru`.
 - Validado contra software de referencia (Bishop simplificado): seco
-  (`FS 1.3747` vs `1.37563`) y con `ru = 0.25` (`1.1001` vs `1.101`).
+  (`FS 1.3747` vs `1.37563`), con `ru = 0.25` (`1.1001` vs `1.101`) y con
+  `c = 0` (`1.3009` vs `1.30087`).
 
 **Fase 2 — Fellenius (completa y validada contra software de referencia)**
 
@@ -25,7 +26,7 @@ referencia)**
 - Validado contra software de referencia (Ordinary/Fellenius): `FS 1.0768` vs
   `1.07797`.
 
-12 tests en verde.
+13 tests en verde.
 
 ## Stack
 

@@ -54,3 +54,30 @@ def test_reference_benchmark_ru():
     slices = slice_slope(geometry, REF_CIRCLE, num_slices=REF_NUM_SLICES)
     result = bishop_fs(slices, soil)
     assert result.fs == pytest.approx(1.101, rel=2e-2)  # ±2%
+
+
+# Caso c=0 (seco). El círculo es muy grande y su centro queda a la izquierda
+# del pie; la masa válida empieza en el toe, no en el corte lejano.
+# Centro (14.4321, 93.5343), R=70.2803, FS=1.30087 (trasladado -30, -25).
+REF_C0_HEIGHT = 10.0
+REF_C0_ANGLE = 26.565051
+REF_C0_COHESION = 0.0
+REF_C0_PHI = 30.0
+REF_C0_GAMMA = 20.0
+REF_C0_CIRCLE = SlipCircle(center_x=-15.5679, center_y=68.5343, radius=70.2803)
+REF_C0_EXPECTED_FS = 1.30087
+REF_C0_NUM_SLICES = 50
+
+
+def test_reference_benchmark_c0():
+    geometry = SlopeGeometry(height=REF_C0_HEIGHT, angle=REF_C0_ANGLE)
+    soil = SoilParams(
+        cohesion=REF_C0_COHESION,
+        phi=REF_C0_PHI,
+        gamma=REF_C0_GAMMA,
+    )
+    slices = slice_slope(geometry, REF_C0_CIRCLE, num_slices=REF_C0_NUM_SLICES)
+    # La masa debe arrancar en el toe (x=0) y terminar en la cresta (x~23.33).
+    assert sum(s.width for s in slices) == pytest.approx(23.33, abs=0.05)
+    result = bishop_fs(slices, soil)
+    assert result.fs == pytest.approx(REF_C0_EXPECTED_FS, rel=2e-2)  # ±2%
