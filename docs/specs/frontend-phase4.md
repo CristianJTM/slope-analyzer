@@ -10,8 +10,9 @@ e historial. Una sola página, sin router ni librerías de UI.
 
 ## Backend
 
-Requiere CORS para `http://localhost:5173` (configurado en `app/main.py`).
-Endpoints usados: `POST /api/v1/analyze`, `GET /api/v1/analyses`.
+Requiere CORS para `http://localhost:5173` y `http://127.0.0.1:5173`
+(configurado en `app/main.py`). Endpoints usados: `POST /api/v1/analyze`,
+`GET /api/v1/analyses`.
 
 ## Estructura
 
