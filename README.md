@@ -17,14 +17,15 @@ referencia)**
   (`slip_circle`), o ingresadas directamente.
 - Presión de poros modelada con `ru`.
 - Validado contra software de referencia (Bishop simplificado): seco
-  (`FS 1.3747` vs `1.37563`) y con `ru = 0.25` (`1.1001` vs `1.101`).
+  (`FS 1.3747` vs `1.37563`), con `ru = 0.25` (`1.1001` vs `1.101`) y con
+  `c = 0` (`1.3009` vs `1.30087`).
 
 **Fase 2 — Fellenius (en curso)**
 
 - Núcleo del método ordinario implementado + tests.
 - ⏳ Validación externa pendiente.
 
-11 tests en verde.
+12 tests en verde.
 
 ## Stack
 
