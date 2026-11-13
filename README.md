@@ -31,14 +31,20 @@ referencia)**
 - FastAPI: `POST /api/v1/analyze` y `GET /api/v1/analyses`.
 - Historial persistido en SQLite con SQLAlchemy.
 
-18 tests en verde.
+**Fase 4 — Frontend (implementado)**
+
+- React + Vite + TypeScript + Tailwind.
+- Formulario → cálculo → resultado e historial contra la API.
+
+18 tests backend en verde; build del frontend OK.
 
 ## Stack
 
 - Backend: Python 3.11+ (probado con 3.12)
 - API: FastAPI + SQLAlchemy (SQLite)
+- Frontend: React + Vite + TypeScript + Tailwind
 - Tests: `pytest`
-- Futuro: React/Vite/TypeScript + Docker Compose
+- Futuro: Docker Compose
 
 ## Estructura
 
@@ -56,6 +62,13 @@ backend/
     db/            # SQLite + SQLAlchemy (historial)
     main.py        # app FastAPI
   tests/           # pruebas con pytest
+frontend/
+  src/
+    api/           # cliente HTTP tipado (types, client, analysis)
+    hooks/         # estado (useAnalyses)
+    components/    # SlopeForm, ResultPanel, HistoryList
+    App.tsx
+    main.tsx
 docs/specs/        # especificaciones de cada módulo
 ```
 
@@ -91,6 +104,16 @@ uvicorn app.main:app --reload
 
 Swagger en `http://127.0.0.1:8000/docs`.
 
+## Cómo correr el frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+App en `http://localhost:5173` (la API debe estar corriendo en `:8000`).
+
 ## Método
 
 Bishop Simplificado (1955), método de las dovelas:
@@ -115,7 +138,7 @@ FS = Σ [ cohesion·Δl + W·(1 − ru)·cos α·tan φ ] / Σ [ W·sin α ]
 2. ~~Validación contra software de referencia (seco y `ru`)~~ (completa).
 3. ~~Fase 2 — Fellenius~~: núcleo + tests + validación externa (completa).
 4. ~~Fase 3 — API FastAPI + SQLite~~ (completa).
-5. **Fase 4** — Frontend React/Vite/TypeScript.
+5. ~~Fase 4 — Frontend React/Vite/TypeScript~~ (completa).
 6. **Fase 5** — Docker Compose + CI con GitHub Actions.
 
 Este README se actualiza al cerrar cada fase.

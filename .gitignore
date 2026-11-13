@@ -41,6 +41,9 @@ desktop.ini
 opencode.json
 prompts/
 
+# Node / frontend
+node_modules/
+
 # Base de datos local (fase futura)
 *.sqlite
 *.sqlite3
