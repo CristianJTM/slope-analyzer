@@ -42,7 +42,14 @@ referencia)**
   profundos (tangentes a una cota).
 - Disponible en el backend y en el frontend (botón «Buscar crítico»).
 
-26 tests backend en verde; build del frontend OK.
+**Fase 5 — Docker + CI (implementada)**
+
+- `docker compose up --build`: backend (`:8000`) + frontend nginx (`:8080`) y
+  volumen SQLite.
+- nginx proxea `/api/` al backend; CI corre `pytest`, `npm run build` y
+  `docker compose build`.
+
+26 tests backend en verde; build del frontend OK; imágenes Docker OK.
 
 ## Stack
 
@@ -77,6 +84,8 @@ frontend/
     App.tsx
     main.tsx
 docs/specs/        # especificaciones de cada módulo
+docker-compose.yml # backend + frontend + volumen SQLite
+.github/workflows/ # CI (pytest, npm build, docker build)
 ```
 
 ## Glosario (dominio)
@@ -121,6 +130,20 @@ npm run dev
 
 App en `http://localhost:5173` (la API debe estar corriendo en `:8000`).
 
+## Cómo correr con Docker
+
+```powershell
+docker compose up --build
+```
+
+- Frontend: `http://localhost:8080`
+- API / Swagger: `http://localhost:8000/docs`
+
+```powershell
+docker compose down      # detener
+docker compose down -v   # detener y borrar el historial (volumen)
+```
+
 ## Método
 
 Bishop Simplificado (1955), método de las dovelas:
@@ -147,6 +170,6 @@ FS = Σ [ cohesion·Δl + W·(1 − ru)·cos α·tan φ ] / Σ [ W·sin α ]
 4. ~~Fase 3 — API FastAPI + SQLite~~ (completa).
 5. ~~Fase 4 — Frontend React/Vite/TypeScript~~ (completa).
 6. ~~Búsqueda del círculo crítico (backend)~~ (completa).
-7. **Fase 5** — Docker Compose + CI con GitHub Actions.
+7. ~~Fase 5 — Docker Compose + CI~~ (completa).
 
 Este README se actualiza al cerrar cada fase.
