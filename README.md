@@ -36,7 +36,13 @@ referencia)**
 - React + Vite + TypeScript + Tailwind.
 - Formulario → cálculo → resultado e historial contra la API.
 
-18 tests backend en verde; build del frontend OK.
+**Búsqueda del círculo crítico (backend, implementada)**
+
+- `POST /api/v1/search`: grid de centros + refinamiento, círculos por el pie y
+  profundos (tangentes a una cota).
+- Devuelve el `fs` mínimo y el `slip_circle` crítico.
+
+26 tests backend en verde; build del frontend OK.
 
 ## Stack
 
@@ -56,6 +62,7 @@ backend/
       slicing.py   # slice_slope(): geometría -> dovelas
       bishop.py    # bishop_fs(): dovelas -> factor de seguridad
       fellenius.py # fellenius_fs(): método ordinario (sin iterar)
+      search.py    # critical_circle(): búsqueda del mínimo FS
     models/        # DTOs Pydantic (request/response)
     services/      # aplicación: core + persistencia
     api/           # endpoints FastAPI
@@ -139,6 +146,7 @@ FS = Σ [ cohesion·Δl + W·(1 − ru)·cos α·tan φ ] / Σ [ W·sin α ]
 3. ~~Fase 2 — Fellenius~~: núcleo + tests + validación externa (completa).
 4. ~~Fase 3 — API FastAPI + SQLite~~ (completa).
 5. ~~Fase 4 — Frontend React/Vite/TypeScript~~ (completa).
-6. **Fase 5** — Docker Compose + CI con GitHub Actions.
+6. ~~Búsqueda del círculo crítico (backend)~~ (completa).
+7. **Fase 5** — Docker Compose + CI con GitHub Actions.
 
 Este README se actualiza al cerrar cada fase.

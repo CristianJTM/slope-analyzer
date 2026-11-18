@@ -36,3 +36,28 @@ class AnalysisResponse(BaseModel):
     created_at: datetime
     input: dict
     result: dict
+
+
+class SearchBoundsIn(BaseModel):
+    x_min: float
+    x_max: float
+    y_min: float
+    y_max: float
+
+
+class SearchRequest(BaseModel):
+    method: Literal["bishop", "fellenius"]
+    geometry: SlopeGeometryIn
+    soil: SoilParamsIn
+    num_slices: int = Field(50, ge=1)
+    grid: int = Field(15, ge=2)
+    depths: list[float] = Field(default_factory=lambda: [0.0])
+    bounds: SearchBoundsIn | None = None
+
+
+class CriticalCircleResponse(BaseModel):
+    fs: float
+    slip_circle: SlipCircleIn
+    method: str
+    num_slices: int
+    evaluations: int

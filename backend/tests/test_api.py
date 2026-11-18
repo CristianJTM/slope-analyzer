@@ -89,3 +89,23 @@ def test_list_analyses(client):
     assert len(data) == 2
     assert data[0]["method"] == "bishop"
     assert data[1]["method"] == "fellenius"
+
+
+def test_search_endpoint(client):
+    resp = client.post(
+        "/api/v1/search",
+        json={
+            "method": "bishop",
+            "geometry": {"height": 10.0, "angle": 26.565051},
+            "soil": {
+                "cohesion": 10.0,
+                "phi": 20.0,
+                "gamma": 20.0,
+                "ru": 0.25,
+            },
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["fs"] == pytest.approx(1.10, rel=5e-2)
+    assert data["slip_circle"]["radius"] > 0
