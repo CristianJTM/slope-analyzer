@@ -36,11 +36,11 @@ referencia)**
 - React + Vite + TypeScript + Tailwind.
 - Formulario → cálculo → resultado e historial contra la API.
 
-**Búsqueda del círculo crítico (backend, implementada)**
+**Búsqueda del círculo crítico (implementada)**
 
 - `POST /api/v1/search`: grid de centros + refinamiento, círculos por el pie y
   profundos (tangentes a una cota).
-- Devuelve el `fs` mínimo y el `slip_circle` crítico.
+- Disponible en el backend y en el frontend (botón «Buscar crítico»).
 
 26 tests backend en verde; build del frontend OK.
 
@@ -73,7 +73,7 @@ frontend/
   src/
     api/           # cliente HTTP tipado (types, client, analysis)
     hooks/         # estado (useAnalyses)
-    components/    # SlopeForm, ResultPanel, HistoryList
+    components/    # SlopeForm, ResultPanel, CriticalCirclePanel, HistoryList
     App.tsx
     main.tsx
 docs/specs/        # especificaciones de cada módulo

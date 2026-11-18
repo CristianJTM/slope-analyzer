@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from "react";
-import type { AnalyzeRequest, Method } from "../api/types";
+import type { AnalyzeRequest, Method, SearchRequest } from "../api/types";
 
 interface Props {
-  onSubmit: (req: AnalyzeRequest) => void;
+  onAnalyze: (req: AnalyzeRequest) => void;
+  onSearch: (req: SearchRequest) => void;
   loading: boolean;
+  searching: boolean;
 }
 
 function NumberInput(props: {
@@ -26,7 +28,12 @@ function NumberInput(props: {
   );
 }
 
-export default function SlopeForm({ onSubmit, loading }: Props) {
+export default function SlopeForm({
+  onAnalyze,
+  onSearch,
+  loading,
+  searching,
+}: Props) {
   const [method, setMethod] = useState<Method>("bishop");
   const [height, setHeight] = useState(10);
   const [angle, setAngle] = useState(26.565);
@@ -39,19 +46,25 @@ export default function SlopeForm({ onSubmit, loading }: Props) {
   const [ru, setRu] = useState(0.25);
   const [numSlices, setNumSlices] = useState(50);
 
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    onSubmit({
+  function common() {
+    return {
       method,
       geometry: { height, angle },
-      slip_circle: { center_x: centerX, center_y: centerY, radius },
       soil: { cohesion, phi, gamma, ru },
       num_slices: numSlices,
+    };
+  }
+
+  function handleAnalyze(event: FormEvent) {
+    event.preventDefault();
+    onAnalyze({
+      ...common(),
+      slip_circle: { center_x: centerX, center_y: centerY, radius },
     });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleAnalyze} className="space-y-4">
       <label className="flex flex-col text-sm">
         <span className="mb-1 text-slate-600">Método</span>
         <select
@@ -102,13 +115,28 @@ export default function SlopeForm({ onSubmit, loading }: Props) {
         step={1}
       />
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-      >
-        {loading ? "Calculando..." : "Calcular"}
-      </button>
+      <p className="text-xs text-slate-500">
+        El círculo se usa en «Calcular»; «Buscar crítico» lo calcula
+        automáticamente.
+      </p>
+
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {loading ? "Calculando..." : "Calcular"}
+        </button>
+        <button
+          type="button"
+          onClick={() => onSearch(common())}
+          disabled={searching}
+          className="rounded border border-slate-900 px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-50"
+        >
+          {searching ? "Buscando..." : "Buscar crítico"}
+        </button>
+      </div>
     </form>
   );
 }

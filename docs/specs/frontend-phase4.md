@@ -12,7 +12,7 @@ e historial. Una sola página, sin router ni librerías de UI.
 
 Requiere CORS para `http://localhost:5173` y `http://127.0.0.1:5173`
 (configurado en `app/main.py`). Endpoints usados: `POST /api/v1/analyze`,
-`GET /api/v1/analyses`.
+`GET /api/v1/analyses` y `POST /api/v1/search`.
 
 ## Estructura
 
@@ -32,6 +32,7 @@ frontend/
     hooks/useAnalyses.ts
     components/SlopeForm.tsx
     components/ResultPanel.tsx
+    components/CriticalCirclePanel.tsx
     components/HistoryList.tsx
 ```
 
@@ -41,6 +42,8 @@ frontend/
 2. `SlopeForm` arma el `AnalyzeRequest` y llama a `analyze()`.
 3. `ResultPanel` muestra `fs`, iteraciones y convergencia.
 4. `HistoryList` se refresca tras cada cálculo.
+5. «Buscar crítico» llama a `searchCriticalCircle()` (`POST /search`) y muestra
+   el FS mínimo y el círculo en `CriticalCirclePanel`.
 
 ## Tipos
 

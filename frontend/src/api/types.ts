@@ -39,3 +39,28 @@ export interface AnalysisRecord {
   input: AnalyzeRequest;
   result: AnalysisResult;
 }
+
+export interface SearchBounds {
+  x_min: number;
+  x_max: number;
+  y_min: number;
+  y_max: number;
+}
+
+export interface SearchRequest {
+  method: Method;
+  geometry: SlopeGeometry;
+  soil: SoilParams;
+  num_slices: number;
+  grid?: number;
+  depths?: number[];
+  bounds?: SearchBounds;
+}
+
+export interface CriticalCircle {
+  fs: number;
+  slip_circle: SlipCircle;
+  method: string;
+  num_slices: number;
+  evaluations: number;
+}
