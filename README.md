@@ -52,8 +52,9 @@ referencia)**
 **Editor geométrico CAD (frontend, etapa 1)**
 
 - Dibujo de un polígono cerrado con vértices (SVG), mínimo 6.
-- Grilla + snap de grilla, object snap de vértice, comandos polar (`90-5`) y
-  coordenada (`2-5`), hover con largo/ángulo.
+- Cursor libre (snap solo al click), panel flotante junto al cursor y atajos
+  de teclado; grilla + object snap de vértice, comandos polar (`90-5`) y
+  coordenada (`2-5`).
 - ⏳ Todavía no está conectado al cálculo (requiere geometría libre en `core`).
 
 26 tests backend en verde; build del frontend OK; imágenes Docker OK.

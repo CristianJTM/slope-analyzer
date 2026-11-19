@@ -12,27 +12,34 @@ export const GRID_SIZE = 1; // metros
 export const OSNAP_TOL = 0.5; // metros
 export const MIN_VERTICES = 6;
 
+export function nearestVertex(
+  raw: Point,
+  vertices: Point[],
+  excludeIndex?: number,
+): Point | null {
+  let best: Point | null = null;
+  let bestDist = OSNAP_TOL;
+  for (let i = 0; i < vertices.length; i++) {
+    if (i === excludeIndex) continue;
+    const v = vertices[i];
+    const d = Math.hypot(v.x - raw.x, v.y - raw.y);
+    if (d <= bestDist) {
+      bestDist = d;
+      best = v;
+    }
+  }
+  return best;
+}
+
 export function resolvePoint(
   raw: Point,
   vertices: Point[],
   opts: { snapGrid: boolean; snapVertex: boolean },
   excludeIndex?: number,
 ): { point: Point; snappedTo: SnapKind } {
-  if (opts.snapVertex && vertices.length > 0) {
-    let best: Point | null = null;
-    let bestDist = OSNAP_TOL;
-    for (let i = 0; i < vertices.length; i++) {
-      if (i === excludeIndex) continue;
-      const v = vertices[i];
-      const d = Math.hypot(v.x - raw.x, v.y - raw.y);
-      if (d <= bestDist) {
-        bestDist = d;
-        best = v;
-      }
-    }
-    if (best) {
-      return { point: best, snappedTo: "vertex" };
-    }
+  if (opts.snapVertex) {
+    const v = nearestVertex(raw, vertices, excludeIndex);
+    if (v) return { point: v, snappedTo: "vertex" };
   }
   if (opts.snapGrid) {
     return {
@@ -58,6 +65,7 @@ export function useSlopeEditor() {
   const [snapGrid, setSnapGrid] = useState(true);
   const [snapVertex, setSnapVertex] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [commandBuffer, setCommandBuffer] = useState("");
 
   const addVertex = useCallback((point: Point) => {
     setVertices((vs) => [...vs, point]);
@@ -74,6 +82,7 @@ export function useSlopeEditor() {
   const clear = useCallback(() => {
     setVertices([]);
     setMessage(null);
+    setCommandBuffer("");
   }, []);
 
   const applyCommand = useCallback(
@@ -108,6 +117,26 @@ export function useSlopeEditor() {
     [mode],
   );
 
+  const appendCommandChar = useCallback((ch: string) => {
+    if (!/[0-9.\-]/.test(ch)) return;
+    setCommandBuffer((buf) => buf + ch);
+    setMessage(null);
+  }, []);
+
+  const backspaceCommand = useCallback(() => {
+    setCommandBuffer((buf) => buf.slice(0, -1));
+  }, []);
+
+  const clearCommand = useCallback(() => {
+    setCommandBuffer("");
+  }, []);
+
+  const submitCommand = useCallback(() => {
+    if (commandBuffer.trim() === "") return;
+    applyCommand(commandBuffer);
+    setCommandBuffer("");
+  }, [commandBuffer, applyCommand]);
+
   return {
     vertices,
     mode,
@@ -117,10 +146,15 @@ export function useSlopeEditor() {
     snapVertex,
     setSnapVertex,
     message,
+    commandBuffer,
     addVertex,
     moveVertex,
     undo,
     clear,
     applyCommand,
+    appendCommandChar,
+    backspaceCommand,
+    clearCommand,
+    submitCommand,
   };
 }

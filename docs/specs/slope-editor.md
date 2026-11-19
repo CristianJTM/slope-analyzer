@@ -8,25 +8,35 @@ frontend. Etapa 1: dibujo y validación (todavía no conectado al cálculo).
 - Metros, `x` a la derecha, `y` hacia arriba.
 - Mapeo fijo mundo→pantalla (escala px/m + origen) con grilla visible.
 
+## Cursor y snap
+
+- El cursor es **libre**: no salta a la grilla al moverse.
+- Al pasar cerca de un vértice (≤ `OSNAP_TOL = 0.5 m`) se muestra un
+  **marcador verde** de sugerencia (sin mover el cursor).
+- El **snap se aplica recién al hacer click**: primero vértice, luego grilla
+  (si el toggle está activo), si no, posición libre.
+- Al arrastrar, el vértice se mueve libre.
+
 ## Interacciones
 
-- **Hover**: línea elástica desde el último vértice al cursor, con largo (m) y
-  ángulo (°) en vivo.
-- **Click** en el fondo: agrega un vértice.
+- **Hover**: línea elástica desde el último vértice al cursor libre, con largo
+  (m) y ángulo (°) en vivo.
+- **Click** en el fondo: agrega un vértice (con snap).
 - **Drag** sobre un vértice: lo mueve.
-- **Comando** (input + toggle de modo):
+- **Comando** (input fijo + modo Polar / Coordenada):
   - `polar` (`ángulo-largo`): `90-5` → vertical 5 m hacia arriba.
   - `coord` (`x-y`): `2-5` → coordenada absoluta `(2,5)`.
+- **Teclado** (con el puntero sobre el canvas y foco fuera de inputs):
+  - dígitos / `.` / `-` arman el comando;
+  - `Enter` agrega; `Esc` borra; `Backspace` borra el último carácter;
+  - `P` / `C` cambian a modo Polar / Coordenada.
 - **Deshacer** (borra el último) y **Limpiar**.
 - Ángulo en grados, antihorario desde `+x` (90° = arriba).
 
-## Snapping
+## Entrada dinámica
 
-- **Grilla**: redondea a `GRID_SIZE = 1 m` (toggle).
-- **Object snap de vértice**: si el punto está a ≤ `OSNAP_TOL = 0.5 m` de un
-  vértice existente, se imanta a él (toggle + marcador cuadrado verde).
-- Prioridad: object snap de vértice > snap de grilla.
-- Los comandos escritos son exactos (no se imantan).
+- Panel flotante **junto al cursor** (solo lectura, `pointer-events: none`):
+  coordenadas, `L` y `θ` en vivo, modo actual y comando en curso.
 
 ## Validación
 
@@ -38,7 +48,7 @@ frontend. Etapa 1: dibujo y validación (todavía no conectado al cálculo).
 
 ```
 frontend/src/
-  components/SlopeEditor.tsx   # SVG, grilla, interacciones, panel de info
+  components/SlopeEditor.tsx   # SVG, grilla, interacciones, panel flotante
   hooks/useSlopeEditor.ts      # vertices[], modo, snaps, comandos, validación
 ```
 
