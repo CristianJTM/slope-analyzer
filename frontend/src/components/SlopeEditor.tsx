@@ -43,6 +43,8 @@ export default function SlopeEditor() {
     setSnapGrid,
     snapVertex,
     setSnapVertex,
+    editing,
+    setEditing,
     message,
     commandBuffer,
     addVertex,
@@ -88,7 +90,20 @@ export default function SlopeEditor() {
     setPointer({ left: Math.max(0, left), top: Math.max(0, top) });
   }
 
+  function exitEditing() {
+    setEditing(false);
+    clearCommand();
+    setHoverFree(null);
+    setSnapSuggestion(null);
+    setDragging(null);
+  }
+
   function handleMove(e: PointerEvent<SVGSVGElement>) {
+    if (!editing) {
+      setHoverFree(null);
+      setSnapSuggestion(null);
+      return;
+    }
     const world = eventToWorld(e);
     if (!world) return;
     setHoverFree(world);
@@ -111,6 +126,10 @@ export default function SlopeEditor() {
   }
 
   function handleBackgroundClick(e: MouseEvent<SVGRectElement>) {
+    if (!editing) {
+      setEditing(true);
+      return;
+    }
     const world = eventToWorld(e);
     if (!world) return;
     const placed = resolvePoint(world, vertices, { snapGrid, snapVertex });
@@ -119,6 +138,10 @@ export default function SlopeEditor() {
 
   function handleVertexDown(index: number, e: PointerEvent<SVGCircleElement>) {
     e.stopPropagation();
+    if (!editing) {
+      setEditing(true);
+      return;
+    }
     setDragging(index);
   }
 
@@ -130,7 +153,7 @@ export default function SlopeEditor() {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (!hovering) return;
+      if (!hovering || !editing) return;
       const el = document.activeElement;
       if (
         el instanceof HTMLInputElement ||
@@ -144,7 +167,11 @@ export default function SlopeEditor() {
         submitCommand();
       } else if (e.key === "Escape") {
         e.preventDefault();
-        clearCommand();
+        if (commandBuffer) {
+          clearCommand();
+        } else {
+          exitEditing();
+        }
       } else if (e.key === "Backspace") {
         e.preventDefault();
         backspaceCommand();
@@ -163,6 +190,8 @@ export default function SlopeEditor() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [
     hovering,
+    editing,
+    commandBuffer,
     submitCommand,
     clearCommand,
     backspaceCommand,
@@ -202,20 +231,46 @@ export default function SlopeEditor() {
     })
     .join(" ");
 
+  const editingControlsClass = editing ? "" : " opacity-50";
+
   return (
     <section className="rounded border border-slate-200 p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">Editor de talud (CAD)</h2>
-        <span
-          className={`rounded px-2 py-1 text-xs font-medium ${
-            valid
-              ? "bg-emerald-100 text-emerald-800"
-              : "bg-amber-100 text-amber-800"
-          }`}
-        >
-          {vertices.length} vértices / {vertices.length} aristas
-          {valid ? " · válido" : ` · faltan ${MIN_VERTICES - vertices.length}`}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded px-2 py-1 text-xs font-medium ${
+              valid
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-amber-100 text-amber-800"
+            }`}
+          >
+            {vertices.length} vértices / {vertices.length} aristas
+            {valid ? " · válido" : ` · faltan ${MIN_VERTICES - vertices.length}`}
+          </span>
+          {editing ? (
+            <button
+              type="button"
+              onClick={exitEditing}
+              className="rounded border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700"
+            >
+              Salir de edición
+            </button>
+          ) : (
+            <>
+              <span className="rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                Modo lectura
+              </span>
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="rounded bg-slate-900 px-3 py-1 text-xs font-medium text-white"
+              >
+                Editar
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div ref={containerRef} className="relative">
@@ -292,7 +347,7 @@ export default function SlopeEditor() {
             />
           )}
 
-          {lastScreen && hoverScreen && (
+          {editing && lastScreen && hoverScreen && (
             <line
               x1={lastScreen.x}
               y1={lastScreen.y}
@@ -316,13 +371,13 @@ export default function SlopeEditor() {
                 fill={dragging === i ? "#1d4ed8" : "white"}
                 stroke="#1d4ed8"
                 strokeWidth={2}
-                style={{ cursor: "grab" }}
+                style={{ cursor: editing ? "grab" : "default" }}
                 onPointerDown={(e) => handleVertexDown(i, e)}
               />
             );
           })}
 
-          {snapScreen && (
+          {editing && snapScreen && (
             <rect
               x={snapScreen.x - 9}
               y={snapScreen.y - 9}
@@ -336,7 +391,7 @@ export default function SlopeEditor() {
           )}
         </svg>
 
-        {hoverFree && (
+        {editing && hoverFree && (
           <div
             className="pointer-events-none absolute z-10 rounded border border-slate-300 bg-white/95 px-2 py-1 text-xs shadow"
             style={{ left: pointer.left, top: pointer.top }}
@@ -357,16 +412,24 @@ export default function SlopeEditor() {
         )}
       </div>
 
-      <div className="mt-3 grid gap-3 text-sm md:grid-cols-2">
+      <div className={`mt-3 grid gap-3 text-sm md:grid-cols-2${editingControlsClass}`}>
         <div className="rounded bg-slate-50 p-3 text-slate-600">
-          <p>
-            Teclado (con el puntero sobre el canvas): dígitos / . / - arman el
-            comando · <b>Enter</b> agrega · <b>Esc</b> borra · <b>P</b> polar ·{" "}
-            <b>C</b> coordenada.
-          </p>
-          <p className="mt-1 text-slate-500">
-            El cursor es libre; el snap se aplica al hacer click.
-          </p>
+          {editing ? (
+            <>
+              <p>
+                Teclado (con el puntero sobre el canvas): dígitos / . / - arman
+                el comando · <b>Enter</b> agrega · <b>Esc</b> sale · <b>P</b>{" "}
+                polar · <b>C</b> coordenada.
+              </p>
+              <p className="mt-1 text-slate-500">
+                El cursor es libre; el snap se aplica al hacer click.
+              </p>
+            </>
+          ) : (
+            <p>
+              Modo lectura — click en el canvas o «Editar» para volver a editar.
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleCommandSubmit} className="space-y-2">
@@ -374,6 +437,7 @@ export default function SlopeEditor() {
             <button
               type="button"
               onClick={() => setMode("polar")}
+              disabled={!editing}
               className={`rounded px-3 py-1 text-xs font-medium ${
                 mode === "polar"
                   ? "bg-slate-900 text-white"
@@ -385,6 +449,7 @@ export default function SlopeEditor() {
             <button
               type="button"
               onClick={() => setMode("coord")}
+              disabled={!editing}
               className={`rounded px-3 py-1 text-xs font-medium ${
                 mode === "coord"
                   ? "bg-slate-900 text-white"
@@ -398,6 +463,7 @@ export default function SlopeEditor() {
             <input
               value={command}
               onChange={(e) => setCommand(e.target.value)}
+              disabled={!editing}
               placeholder={
                 mode === "polar" ? "ángulo-largo (90-5)" : "x-y (2-5)"
               }
@@ -405,6 +471,7 @@ export default function SlopeEditor() {
             />
             <button
               type="submit"
+              disabled={!editing}
               className="rounded bg-slate-900 px-3 py-1 text-sm font-semibold text-white"
             >
               Agregar
@@ -434,6 +501,7 @@ export default function SlopeEditor() {
         <button
           type="button"
           onClick={undo}
+          disabled={!editing}
           className="rounded border border-slate-300 px-3 py-1"
         >
           Deshacer
@@ -441,6 +509,7 @@ export default function SlopeEditor() {
         <button
           type="button"
           onClick={clear}
+          disabled={!editing}
           className="rounded border border-slate-300 px-3 py-1"
         >
           Limpiar

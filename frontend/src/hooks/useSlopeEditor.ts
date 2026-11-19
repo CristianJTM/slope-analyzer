@@ -66,6 +66,7 @@ export function useSlopeEditor() {
   const [snapVertex, setSnapVertex] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [commandBuffer, setCommandBuffer] = useState("");
+  const [editing, setEditing] = useState(true);
 
   const addVertex = useCallback((point: Point) => {
     setVertices((vs) => [...vs, point]);
@@ -145,6 +146,8 @@ export function useSlopeEditor() {
     setSnapGrid,
     snapVertex,
     setSnapVertex,
+    editing,
+    setEditing,
     message,
     commandBuffer,
     addVertex,

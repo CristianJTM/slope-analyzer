@@ -17,6 +17,16 @@ frontend. Etapa 1: dibujo y validación (todavía no conectado al cálculo).
   (si el toggle está activo), si no, posición libre.
 - Al arrastrar, el vértice se mueve libre.
 
+## Modo edición
+
+- Por defecto **activado**.
+- **Salir**: `Escape` (en dos pasos) o botón «Salir de edición».
+- Al salir se ocultan la línea discontinua y el panel flotante, se bloquean
+  click/drag y el teclado de comandos, y el polígono queda visible en **modo
+  lectura**.
+- **Volver**: botón «Editar» o click en el canvas (ese click no agrega vértice).
+- `Escape` con comando en curso: primero borra el comando; el siguiente sale.
+
 ## Interacciones
 
 - **Hover**: línea elástica desde el último vértice al cursor libre, con largo
@@ -28,7 +38,8 @@ frontend. Etapa 1: dibujo y validación (todavía no conectado al cálculo).
   - `coord` (`x-y`): `2-5` → coordenada absoluta `(2,5)`.
 - **Teclado** (con el puntero sobre el canvas y foco fuera de inputs):
   - dígitos / `.` / `-` arman el comando;
-  - `Enter` agrega; `Esc` borra; `Backspace` borra el último carácter;
+  - `Enter` agrega; `Backspace` borra el último carácter;
+  - `Esc` sale del modo edición (si hay comando en curso, primero lo borra);
   - `P` / `C` cambian a modo Polar / Coordenada.
 - **Deshacer** (borra el último) y **Limpiar**.
 - Ángulo en grados, antihorario desde `+x` (90° = arriba).
