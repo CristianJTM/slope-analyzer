@@ -49,6 +49,13 @@ referencia)**
 - nginx proxea `/api/` al backend; CI corre `pytest`, `npm run build` y
   `docker compose build`.
 
+**Editor geométrico CAD (frontend, etapa 1)**
+
+- Dibujo de un polígono cerrado con vértices (SVG), mínimo 6.
+- Grilla + snap de grilla, object snap de vértice, comandos polar (`90-5`) y
+  coordenada (`2-5`), hover con largo/ángulo.
+- ⏳ Todavía no está conectado al cálculo (requiere geometría libre en `core`).
+
 26 tests backend en verde; build del frontend OK; imágenes Docker OK.
 
 ## Stack
@@ -79,8 +86,8 @@ backend/
 frontend/
   src/
     api/           # cliente HTTP tipado (types, client, analysis)
-    hooks/         # estado (useAnalyses)
-    components/    # SlopeForm, ResultPanel, CriticalCirclePanel, HistoryList
+    hooks/         # estado (useAnalyses, useSlopeEditor)
+    components/    # SlopeForm, SlopeEditor, ResultPanel, CriticalCirclePanel, HistoryList
     App.tsx
     main.tsx
 docs/specs/        # especificaciones de cada módulo

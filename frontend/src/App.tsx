@@ -1,6 +1,7 @@
 import CriticalCirclePanel from "./components/CriticalCirclePanel";
 import HistoryList from "./components/HistoryList";
 import ResultPanel from "./components/ResultPanel";
+import SlopeEditor from "./components/SlopeEditor";
 import SlopeForm from "./components/SlopeForm";
 import { useAnalyses } from "./hooks/useAnalyses";
 
@@ -28,6 +29,10 @@ export default function App() {
           {error}
         </p>
       )}
+
+      <div className="mb-6">
+        <SlopeEditor />
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <section className="rounded border border-slate-200 p-4">
